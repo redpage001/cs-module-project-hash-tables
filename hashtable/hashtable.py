@@ -22,6 +22,9 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
+        self.capacity = capacity
+        self.storage = [None] * capacity
+        self.items = 0
 
 
     def get_num_slots(self):
@@ -35,6 +38,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return len(self.storage)
 
 
     def get_load_factor(self):
@@ -44,6 +48,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return self.items / self.capacity
 
 
     def fnv1(self, key):
@@ -54,6 +59,12 @@ class HashTable:
         """
 
         # Your code here
+        hash = 14695981039346656037
+        for x in key:
+            hash = hash * 1099511628211
+            hash = hash ^ ord(x)
+
+        return hash
 
 
     def djb2(self, key):
@@ -63,6 +74,11 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
+        hash = 5381
+        for x in key:
+            hash = (( hash << 5) + hash) + ord(x)
+
+        return hash & 0xFFFFFFFF
 
 
     def hash_index(self, key):
@@ -82,6 +98,15 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        for i, item in enumerate(self.storage):
+            if item and item.key == key:
+                self.storage[i].value = value
+                return
+        self.storage.append(HashTableEntry(key, value))
+        self.items += 1
+        if self.get_load_factor > 0.75:
+            self.resize(self.capacity * 2)
+            print("Resizing")
 
 
     def delete(self, key):
@@ -93,6 +118,13 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        for i, item in enumerate(self.storage):
+            if item and item.key == key:
+                del self.storage[i]
+                self.items -= 1
+                return
+        print("Not in hash map")
+
 
 
     def get(self, key):
@@ -104,6 +136,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        for i, item in enumerate(self.storage):
+            if item and item.key == key:
+                return self.storage[i].value
+        return None
 
 
     def resize(self, new_capacity):
@@ -114,6 +150,13 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        oldStorage = self.storage
+        self.capacity = new_capacity
+        self.storage = [None] * new_capacity
+
+        for item in oldStorage:
+            if item:
+                self.put(item.key, item.value)
 
 
 
@@ -132,6 +175,15 @@ if __name__ == "__main__":
     ht.put("line_10", "Long time the manxome foe he sought--")
     ht.put("line_11", "So rested he by the Tumtum tree")
     ht.put("line_12", "And stood awhile in thought.")
+
+    ht.delete("line_1")
+    ht.delete("line_2")
+    ht.delete("line_3")
+    ht.delete("line_4")
+    ht.delete("line_5")
+    ht.delete("line_6")
+    ht.delete("line_7")
+    ht.delete("line_8")
 
     print("")
 
