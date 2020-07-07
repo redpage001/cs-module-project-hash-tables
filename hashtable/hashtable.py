@@ -98,16 +98,31 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        for i, item in enumerate(self.storage):
-            if item and item.key == key:
-                self.storage[i].value = value
-                return
-        self.storage.append(HashTableEntry(key, value))
-        self.items += 1
-        if self.get_load_factor > 0.75:
-            self.resize(self.capacity * 2)
-            print("Resizing")
+        # for i, item in enumerate(self.storage):
+        #     if item and item.key == key:
+        #         self.storage[i].value = value
+        #         return
+        # self.storage.append(HashTableEntry(key, value))
+        # self.items += 1
+        # if self.get_load_factor > 0.75:
+        #     self.resize(self.capacity * 2)
+        #     print("Resizing")
 
+        key_hash = self.hash_index(key)
+        key_value = [key, value]
+
+        if self.storage[key_hash] is None:
+            self.storage[key_hash] = list([key_value])
+            self.items += 1
+        else:
+            for i in range(len(self.storage[key_hash])):
+                if self.storage[key_hash][i][0] == key:
+                    self.storage[key_hash][i][1] = value
+                    return
+            self.storage[key_hash].append(key_value)
+            self.items += 1
+        if self.get_load_factor() > 0.75:
+            self.resize(self.capacity * 2)
 
     def delete(self, key):
         """
@@ -118,14 +133,26 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        for i, item in enumerate(self.storage):
-            if item and item.key == key:
-                del self.storage[i]
+        # for i, item in enumerate(self.storage):
+        #     if item and item.key == key:
+        #         del self.storage[i]
+        #         self.items -= 1
+        #         return
+        # print("Not in hash map")
+
+        key_hash = self.hash_index(key)
+        print("deleting")
+        
+        if self.storage[key_hash] is None:
+            print("Not in hash map")
+            return
+       
+        for i in range(0, len(self.storage[key_hash])):
+            print(self.storage[key_hash][i])
+            if self.storage[key_hash][i][0] == key:
+                del self.storage[key_hash][i]
                 self.items -= 1
                 return
-        print("Not in hash map")
-
-
 
     def get(self, key):
         """
@@ -136,11 +163,18 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        for i, item in enumerate(self.storage):
-            if item and item.key == key:
-                return self.storage[i].value
-        return None
+        # for i, item in enumerate(self.storage):
+        #     if item and item.key == key:
+        #         return self.storage[i].value
+        # return None
+        
+        key_hash = self.hash_index(key)
 
+        if self.storage[key_hash] is not None:
+            for pair in self.storage[key_hash]:
+                if pair[0] == key:
+                    return pair[1]
+        return None
 
     def resize(self, new_capacity):
         """
@@ -150,15 +184,22 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        # oldStorage = self.storage
+        # self.capacity = new_capacity
+        # self.storage = [None] * new_capacity
+
+        # for item in oldStorage:
+        #     if item:
+        #         self.put(item.key, item.value)
+
         oldStorage = self.storage
         self.capacity = new_capacity
         self.storage = [None] * new_capacity
 
-        for item in oldStorage:
-            if item:
-                self.put(item.key, item.value)
-
-
+        for hash_value in oldStorage:
+            if hash_value:
+                for pair in hash_value:
+                    self.put(pair[0], pair[1])
 
 if __name__ == "__main__":
     ht = HashTable(8)
