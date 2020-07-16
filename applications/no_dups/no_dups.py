@@ -1,7 +1,12 @@
 def no_dups(s):
     # Your code here
-
-
+    string_arr = s.split()
+    unique_arr = list()
+    for i in range(len(string_arr)):
+        if string_arr[i] not in unique_arr:
+            unique_arr.append(string_arr[i])
+    unique_string = ' '.join(unique_arr)
+    return unique_string
 
 if __name__ == "__main__":
     print(no_dups(""))
